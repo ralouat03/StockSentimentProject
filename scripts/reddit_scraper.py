@@ -5,14 +5,11 @@ import pandas as pd
 from datetime import datetime
 import os
 
-# Force load .env
+# Load environment variables from .env file
 from dotenv import load_dotenv
-script_dir = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(dotenv_path=os.path.join(script_dir, '.env'))
+load_dotenv()
 
-
-# API credentials
-
+# API credentials from .env file
 API_ID = os.getenv('API_ID')
 API_SECRET = os.getenv('API_SECRET')
 AGENT = os.getenv('AGENT')
@@ -53,19 +50,20 @@ if __name__ == "__main__":
         target_subreddits = ['stocks', 'wallstreetbets', 'investing', 'biotechplays', 'defensestocks', 'biotech']
         df = scrape_reddit(target_subreddits)
 
-        if df.empty:
-            print("No posts fetched. Check credentials or subreddit accessibility.")
-        else:
+        if not df.empty:
             print(df.head())
 
-            data_dir = os.path.join(script_dir, "..", "data")
+            data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
             os.makedirs(data_dir, exist_ok=True)
             output_path = os.path.join(data_dir, "reddit_posts.csv")
 
             df.to_csv(output_path, index=False)
             print(f"Saved scraped posts to {output_path}")
+        else:
+            print("No posts fetched. Check credentials or subreddit accessibility.")
 
     except Exception as e:
-        print("Error:", e)
+        print(f"Error: {e}")
 
     input("Press Enter to exit...")
+    
