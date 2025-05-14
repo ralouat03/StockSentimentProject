@@ -1,6 +1,6 @@
 import yfinance as yf
 import pandas as pd
-import os  # Import the os module
+import os 
 
 # Define target stock tickers and company names
 companies = {
@@ -11,8 +11,8 @@ companies = {
 }
 
 # Date range for historical stock data
-start_date = '2022-01-01'
-end_date = '2024-12-31'
+start_date = '2025-04-01'
+end_date = '2025-05-12'
 
 # Store all company data in a list
 all_data = []
