@@ -2,6 +2,8 @@
 
 ## Overview
 
+**Open Sentiment_Project.ipynb for a full step-by-step walkthrough of what I've completed in this project!**
+
 This project establishes an end-to-end pipeline to collect, process, and structure real-time social and news sentiment data with the goal of predicting short-term stock market movements. It focuses on pharmaceutical and defense sector stocks, specifically Pfizer, Moderna, Lockheed Martin, and Raytheon. This README details, first, how to run, then, the phases of the project to its completion.
 
 ## How to Run 
