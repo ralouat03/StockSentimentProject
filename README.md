@@ -2,7 +2,15 @@
 
 ## Overview
 
-This project establishes an end-to-end pipeline to collect, process, and structure real-time social and news sentiment data with the goal of predicting short-term stock market movements. It focuses on pharmaceutical and defense sector stocks, specifically Pfizer, Moderna, Lockheed Martin, and Raytheon.
+This project establishes an end-to-end pipeline to collect, process, and structure real-time social and news sentiment data with the goal of predicting short-term stock market movements. It focuses on pharmaceutical and defense sector stocks, specifically Pfizer, Moderna, Lockheed Martin, and Raytheon. This README details, first, how to run, then, the phases of the project to its completion.
+
+## How to Run 
+
+(IMPORTANT) In order to replicate getting 'sentiment.db', users must provide their own API credentials by creating a `.env` file in the project root. A template in the root is provided as `.env.example`. Edit, and insert valid API keys.
+
+Then, run `run_phase1.bat` & `run_phase2.bat`
+
+You now have a `sentiment.db` :)
 
 ---
 
@@ -14,13 +22,7 @@ This project establishes an end-to-end pipeline to collect, process, and structu
 - Clean, format, and store all data in a unified SQLite database (`sentiment.db`).
 - Create an accompanying JuypterNotebook with Phase 1
 
-## How to Run 
 
-(IMPORTANT) In order to replicate getting 'sentiment.db', users must provide their own API credentials by creating a `.env` file in the project root. A template in the root is provided as `.env.example`. Edit, and insert valid API keys.
-
-Then, run `run_phase1.bat`
-
-You now have a `sentiment.db` :)
 ---
 
 ## Data Sources
