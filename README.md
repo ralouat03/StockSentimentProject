@@ -7,6 +7,7 @@ This project establishes an end-to-end pipeline to collect, process, and structu
 ## How to Run 
 
 (IMPORTANT) In order to replicate getting 'sentiment.db', users must provide their own API credentials by creating a `.env` file in the project root. A template in the root is provided as `.env.example`. Edit, and insert valid API keys.
+You must also create a **data** folder in the repo folder (as a sibling to the scripts folder)
 
 Then, run `run_phase1.bat` & `run_phase2.bat`
 
