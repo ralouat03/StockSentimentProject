@@ -2,7 +2,10 @@ import praw
 import pandas as pd
 from datetime import datetime, timedelta
 import os
-import time  # For rate limiting
+import time
+import requests
+from prawcore.exceptions import RequestException, ServerError
+from socket import error as SocketError
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
@@ -33,30 +36,35 @@ except Exception as e:
     exit()
 
 # Function to scrape Reddit posts within a date range
-def scrape_reddit(subreddits, start_date, end_date, post_limit=100):
+def scrape_reddit(subreddits, start_date, end_date, post_limit=100, max_retries=3):
     posts = []
     for sub in subreddits:
-        try:
-            subreddit = reddit_instance.subreddit(sub)
-            # Fetch posts (PRAW doesn't directly filter by date)
-            fetched_posts = subreddit.hot(limit=post_limit) # Increased limit to filter later
+        retries = 0
+        while retries < max_retries:
+            try:
+                subreddit = reddit_instance.subreddit(sub)
+                fetched_posts = subreddit.hot(limit=post_limit)
 
-            for post in fetched_posts:
-                post_date = datetime.fromtimestamp(post.created_utc)
-                if start_date <= post_date <= end_date:
-                    posts.append({
-                        'subreddit': sub,
-                        'title': post.title,
-                        'body': getattr(post, 'selftext', ''),  # Handle missing selftext
-                        'score': post.score,
-                        'comments': post.num_comments,
-                        'created_at': post_date
-                    })
-        except praw.exceptions.PRAWException as e:
-            print(f"Error fetching posts from {sub}: {e}")
-        except Exception as e:
-            print(f"Unexpected error fetching posts from {sub}: {e}")
-        time.sleep(2)  # Rate limiting (adjust as needed)
+                for post in fetched_posts:
+                    post_date = datetime.fromtimestamp(post.created_utc)
+                    if start_date <= post_date <= end_date:
+                        posts.append({
+                            'subreddit': sub,
+                            'title': post.title,
+                            'body': getattr(post, 'selftext', ''),
+                            'score': post.score,
+                            'comments': post.num_comments,
+                            'created_at': post_date
+                        })
+                break  # success
+            except (RequestException, ServerError, SocketError, ConnectionResetError, requests.exceptions.RequestException) as e:
+                retries += 1
+                print(f"Retry {retries}/{max_retries} for subreddit {sub}: {e}")
+                time.sleep(2 ** retries)  # exponential backoff
+            except Exception as e:
+                print(f"Unexpected error fetching posts from {sub}: {e}")
+                break
+        time.sleep(2)  # basic rate limiting
     return pd.DataFrame(posts)
 
 # Main execution
