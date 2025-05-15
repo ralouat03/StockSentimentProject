@@ -9,15 +9,14 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 BASE_URL = os.getenv('BASE_URL')
 
-# Check if NewsAPI credentials exist
 if not all([API_KEY, BASE_URL]):
     raise ValueError("Missing one or both NewsAPI credentials in .env file!")
 
 def fetch_news_single_page(company_name, from_date, to_date, page=1):
     params = {
-        'q': company_name,          # Keyword to search for
+        'q': company_name,
         'language': 'en',
-        'pageSize': 100,             # Max n of results per page
+        'pageSize': 100,
         'sortBy': 'publishedAt',
         'apiKey': API_KEY,
         'from': from_date.strftime('%Y-%m-%d'),
@@ -51,27 +50,29 @@ def fetch_news_single_page(company_name, from_date, to_date, page=1):
 if __name__ == "__main__":
     companies = ['Pfizer', 'Moderna', 'Lockheed Martin', 'Raytheon']
     all_news = []
-    start_date_str = '2025-04-16'
-    end_date_str = '2025-05-12'
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    date_increment = timedelta(days=32) # Fetch for the entire range in one go
+
+    range_start = datetime.strptime('2025-04-15', '%Y-%m-%d').date()
+    range_end = datetime.strptime('2025-05-14', '%Y-%m-%d').date()
+    interval = timedelta(days=8)
 
     for company in companies:
-        print(f"Fetching news for {company} from {start_date} to {end_date} (first 100 results)...")
-        df = fetch_news_single_page(company, start_date, end_date, page=1)
-        if not df.empty:
-            all_news.append(df)
-        time.sleep(1.5) # Respect API rate limits
+        current_start = range_start
+        while current_start < range_end:
+            current_end = min(current_start + interval, range_end)
+            print(f"Fetching news for {company} from {current_start} to {current_end}...")
+            df = fetch_news_single_page(company, current_start, current_end)
+            if not df.empty:
+                all_news.append(df)
+            time.sleep(1.5)
+            current_start = current_end
 
     if all_news:
         result_df = pd.concat(all_news, ignore_index=True)
-
         script_dir = os.path.dirname(os.path.abspath(__file__))
         data_dir = os.path.join(script_dir, "..", "data")
+        os.makedirs(data_dir, exist_ok=True)
         output_path = os.path.join(data_dir, "news_articles.csv")
-
         result_df.to_csv(output_path, index=False)
-        print(f"First 100 news articles per company within the specified timeframe saved to {output_path}")
+        print(f"News articles saved to {output_path}")
     else:
         print("No news articles fetched within the specified timeframe.")

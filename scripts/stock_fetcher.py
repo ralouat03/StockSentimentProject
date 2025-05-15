@@ -11,8 +11,8 @@ companies = {
 }
 
 # Date range for historical stock data
-start_date = '2025-04-01'
-end_date = '2025-05-12'
+start_date = '2025-04-14'
+end_date = '2025-05-14'
 
 # Store all company data in a list
 all_data = []
